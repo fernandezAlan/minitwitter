@@ -1,0 +1,108 @@
+@font-face {
+    font-family: 'PicoBlackAl';
+    src: url('/picoblackal.ttf') format('truetype');
+    font-style: normal;
+    font-weight: normal;
+  }
+
+#container-tweets {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-content: space-around;
+    width: 100vw;
+}
+#tittle{
+    text-align: center;
+    font-family: PicoBlackAl;
+    color: #0d6efd;
+}
+#container-post-a-tweet {
+ 
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+#input-who-are-you {
+    width: 30%;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid gray;
+}
+#textArea-what-are-you-thinking{
+    width: 30%;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+#container{
+    display: flex;
+    flex-direction: column;
+}
+.profile_user_photo{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+
+}
+
+
+.user_tweet{
+    display:flex;
+    width: 50%;
+    font-family: "Helvetica Neue", Roboto, "Segoe UI", Calibri, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 16px;
+    border-color: #eee #ddd #bbb;
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    margin: 10px 5px;
+    padding: 0 16px 16px 16px;
+    max-width: 468px;
+}
+
+.tweet_content{
+    font-size: 16px;
+  font-weight: normal;
+  line-height: 20px;
+}
+.nick_name{
+    color: rgb(156, 147, 147);
+    
+    font-weight: normal
+}
+.nick_name{
+    margin-left: 10px;
+}
+
+.tittle_tweet{
+    padding-top: 10px;
+    margin-top: 5px;
+}
+#button-post-tweet{
+    border-radius: 30px;
+}
+
+.svg_button{
+    width: 15px;
+    height: 15px;
+}
+.interactive_buttons{
+display: flex;
+justify-content: space-between;
+padding-left: 10px;
+padding-right: 10px;
+}
+
+.sub_container{
+    width: 100%;
+}
+.check_profile{
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+}
