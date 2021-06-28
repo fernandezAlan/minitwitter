@@ -90,6 +90,7 @@
 .svg_button{
     width: 15px;
     height: 15px;
+    margin-right: 5px;
 }
 .interactive_buttons{
 display: flex;
@@ -105,4 +106,7 @@ padding-right: 10px;
     width: 10px;
     height: 10px;
     margin-left: 5px;
+}
+.icon_interactive_user :hover{
+    cursor: pointer;
 }

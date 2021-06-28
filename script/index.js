@@ -1,80 +1,106 @@
-
-
-const users =[
-    {
-    id:4,
-    name:"alan",
-    profilePhoto:"https://pbs.twimg.com/profile_images/1281573151747592193/LMHYUNzF_400x400.jpg",
-    nickName:"alan_dario10",
-    verified:true
-},
-{
-    id:1,
-    name:"belen",
-    profilePhoto:"https://lh3.googleusercontent.com/proxy/pPZyB1TqK7hNZ2X849OZTS32e30GvcrvSLYLGyjReKue_6VlVSGyELSDEbsifRl37u8u1mWnwrEr_-1hFxz6qQPTu0Agx456TGtzGS8CraQZ5ztb7tQcjyaYepBMUtbdJJv-X0cRIZIZJPkfl01vX1Hs",
-    nickName:"cure_bel",
-    verified:true
-},
-{
-    id:2,
-    name:"jazmin",
-    profilePhoto:"https://i.pinimg.com/originals/50/26/3b/50263b883b0b9726dd950af71e3a2f27.jpg",
-    nickName:"wachurro_el_furro",
-    verified:true
-},
-{
-    id:3,
-    name:"ricardo fort",
-    profilePhoto:"https://static.ellitoral.com/um/fotos/228579_fort.jpg",
-    nickName:"el_ricky_fort",
-    verified:true
-}
-]
-const tweets =[
-    {
-        id:1,
-        userId:4,
-        content:"este mini twitter es una verga",
-        likes:0,
-        coments:0,
-        retweets:0
-    },
-    {
-        id:2,
-        userId:3,
-        content:"saca la mano de ahi carajo!",
-        likes:0,
-        coments:0,
-        retweets:0
-    },
-    {
-        id:3,
-        userId:1,
-        content:"mi net se volvio a apagar :c ",
-        likes:0,
-        coments:0,
-        retweets:0
-    },
-    {
-        id:3,
-        userId:4,
-        content:"hoy arrranque el gym, me duele todo",
-        likes:0,
-        coments:0,
-        retweets:0
-    },
-    {
-        id:4,
-        userId:2,
-        content:"con quien sale un minecraft hoy gente?",
-        likes:0,
-        coments:0,
-        retweets:0
+let loginUser=null
+const allComents=[]
+const allUsers=[]
+const alltweets=[]
+//clases de usuarios
+class User {
+    constructor(id,name,profilePhoto,nickname,verified){
+        this.id=id,
+        this.name=name,
+        this.profilePhoto=profilePhoto,
+        this.nickName=nickname,
+        this.verified= verified
     }
-]
+    addLike(tweetId,Alltweets){
 
-/*
-*/
+        const selectedTweet = Alltweets.find(tweet=>tweet.id===tweetId)
+        const isLiked = selectedTweet.usersLiked.find(usersId=>usersId===this.id)
+        
+        selectedTweet.likes= isLiked ? selectedTweet.likes - 1 :selectedTweet.likes + 1 
+       
+        const likeCount = document.getElementById('like_tweet_id_'+tweetId)
+        const svgIcon = document.getElementById('svg_like_tweet_id'+tweetId)
+        likeCount.textContent = selectedTweet.likes
+        svgIcon.style.fill=isLiked ?'gray' : 'red'
+
+        if(isLiked){
+            const usersLiked = selectedTweet.usersLiked
+            const index = usersLiked.indexOf(this.id)
+            usersLiked.splice(index,1)
+            selectedTweet.usersLiked= usersLiked
+
+        }else{
+            selectedTweet.usersLiked.push(this.id)
+        }
+        
+    }
+    addComent (coment,tweetId){
+        const selectedTweet = Alltweets.find(tweet=>tweet.id===tweetId)
+        selectedTweet.coments = selectedTweet.coments + 1
+        const comentId= allComents.length + 1
+        const newComents = new Coment(comentId,this.id,coment,tweetId)
+        allComents.push(newComents)
+    }
+    addRetweet(tweetId){
+        const selectedTweet = Alltweets.find(tweet=>tweet.id===tweetId)
+        selectedTweet.retweets = selectedTweet.retweets + 1
+    }
+}
+
+//clases de tweets
+class Tweet {
+    constructor(id,userId,content){
+        this.id= id,
+        this.userId = userId
+        this.content= content,
+        this.likes= 0,
+        this.coments= 0,
+        this.retweets=0
+        this.usersLiked=[]
+    }
+    
+}
+
+class Coment extends Tweet{
+    constructor(id,userId,content,tweetId){
+        super(id,userId,content)
+        this.tweetId= tweetId 
+    }
+
+}
+
+
+
+const getFakeData= async ()=>{
+    let fakePostUsers = await fetch('https://jsonplaceholder.typicode.com/posts')
+    let users = await fetch('https://randomuser.me/api/?results=10')
+    fakePostUsers= await fakePostUsers.json()
+    users= await users.json()
+    users.results.forEach(user => {
+        const id = allUsers.length + 1
+        const name = user.name.first
+        const profilePhoto= user.picture.thumbnail
+        const nickname = user.login.username
+        const newFakeuser = new User(id,name,profilePhoto,nickname,true) 
+        allUsers.push(newFakeuser)
+    });
+    for (let i = 0; i < 15; i++) {
+      var randomNum = Math.floor(Math.random()*9) + 1
+        const RandomTweet = fakePostUsers.find(post=>post.userId===randomNum)
+        fakePostUsers.splice(RandomTweet.id -1, 1)
+        const id = alltweets.length + 1
+        const newTweet = new Tweet(id,RandomTweet.userId,RandomTweet.body)
+        alltweets.push(newTweet)
+    }
+    loginUser= allUsers[0]
+    alltweets.forEach(tweet=>PrintTweet(tweet,allUsers))
+}
+   
+getFakeData()
+
+
+
+
 const constainerTweets = document.getElementById("container-tweets")
 const buttonPostTweet = document.getElementById('button-post-tweet')
 const inputWhoAreYou= document.getElementById('input-who-are-you')
@@ -103,7 +129,7 @@ const getUserTweet = (userId)=>{
     return users.find(user=>user.id===userId)
 }
 
-const PrintTweet = (tweet,arrayOfUsers= users)=>{
+const PrintTweet = (tweet,arrayOfUsers= allUsers)=>{
   
     const container = document.createElement('div')
     const subContainer = document.createElement('div')
@@ -127,7 +153,11 @@ const PrintTweet = (tweet,arrayOfUsers= users)=>{
     svgCheckPath.setAttribute('d','M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.25 17.292l-4.5-4.364 1.857-1.858 2.643 2.506 5.643-5.784 1.857 1.857-7.5 7.643z')  
 
     //we create the svg icon for thw like button
+    const containerLikes = document.createElement('div')
+    const likeCount = document.createElement('span')
     const svgLike = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    likeCount.textContent = tweet.likes
+  
     const iconPathLike = document.createElementNS(
         'http://www.w3.org/2000/svg',
         'path'
@@ -156,13 +186,21 @@ const PrintTweet = (tweet,arrayOfUsers= users)=>{
             'path'
           );
 
-          svgShare.setAttribute('fill', 'gray');
-          svgShare.setAttribute('viewBox', '0 0 32 32');
-          iconPathShare.setAttribute('d','M2,29A1.12,1.12,0,0,1,1.69,29,1,1,0,0,1,1,28V27A19,19,0,0,1,17,8.24V4a1,1,0,0,1,1.6-.8l12,9a1,1,0,0,1,0,1.6l-12,9A1,1,0,0,1,17,22V18.25A18.66,18.66,0,0,0,4.93,25.67L2.81,28.59A1,1,0,0,1,2,29ZM19,6V9.12a1,1,0,0,1-.89,1,17,17,0,0,0-15,14.6l.16-.21A20.68,20.68,0,0,1,17.9,16.11a1,1,0,0,1,.77.26,1,1,0,0,1,.33.74V20l9.33-7Z')
+     svgShare.setAttribute('fill', 'gray');
+     svgShare.setAttribute('viewBox', '0 0 32 32');
+     iconPathShare.setAttribute('d','M2,29A1.12,1.12,0,0,1,1.69,29,1,1,0,0,1,1,28V27A19,19,0,0,1,17,8.24V4a1,1,0,0,1,1.6-.8l12,9a1,1,0,0,1,0,1.6l-12,9A1,1,0,0,1,17,22V18.25A18.66,18.66,0,0,0,4.93,25.67L2.81,28.59A1,1,0,0,1,2,29ZM19,6V9.12a1,1,0,0,1-.89,1,17,17,0,0,0-15,14.6l.16-.21A20.68,20.68,0,0,1,17.9,16.11a1,1,0,0,1,.77.26,1,1,0,0,1,.33.74V20l9.33-7Z')
 
-
-
+          addOnclick(svgLike,'like',tweet.id,alltweets,arrayOfUsers)
+          addOnclick(svgCommentary,'comend',tweet.id)
+          addOnclick(svgShare,'share',tweet.id)
+          
     const user = arrayOfUsers.find(user=>user.id===tweet.userId)
+
+    likeCount.id = 'like_tweet_id_'+ tweet.id
+    svgLike.id='svg_like_tweet_id'+ tweet.id
+
+    containerLikes.classList.add('icon_interactive_user')
+    likeCount.classList.add('like_count')
     content.classList.add('tweet_content')
     userName.classList.add('user_name')
     container.classList.add('user_tweet')
@@ -183,9 +221,11 @@ const PrintTweet = (tweet,arrayOfUsers= users)=>{
 
     svgCheck.appendChild(svgCheckPath)
     svgShare.appendChild(iconPathShare);
+    containerLikes.appendChild(svgLike)
+    containerLikes.appendChild(likeCount)
     svgLike.appendChild(iconPathLike);
     svgCommentary.appendChild(iconPathComentary)
-    interactiveButtons.appendChild(svgLike)
+    interactiveButtons.appendChild(containerLikes)
     interactiveButtons.appendChild(svgShare)
     interactiveButtons.appendChild(svgCommentary)
     tittleTweet.appendChild(userName)
@@ -243,6 +283,55 @@ const userExist=(userName)=>{
     return user ? user : null
 }
 
-tweets.forEach(tweet=>PrintTweet(tweet))
+const addOnclick=(node,type,tweetId,allTweets,allUsers)=>{
+    switch (type) {
+        case "like":
+            node.addEventListener('click',()=>{
+                loginUser.addLike(tweetId,allTweets)
+                
+            })
+            break;
+        case "comend":
+            node.addEventListener('click',()=>console.log("comend!"))
+            break;
+        case "share":
+            node.addEventListener('click',()=>console.log("share!"))
+            break;
+        default:
+            break;
+    }
+
+}
 
 
+/*
+
+class Usuario {
+    constructor(nombre,apellido,edad){
+        this.nombre =nombre
+        this.apellido = apellido,
+        this.edad= edad
+    }
+    saludar(){
+        console.log("hola soy "+ this.nombre)
+    }
+}
+
+class Admin extends Usuario{
+    constructor(nombre,apellido,edad,habilidad){
+       super(nombre,apellido,edad)
+        this.habilidad = habilidad
+    }
+}
+
+var usuarioNuevo = new Usuario("alan","fernandez",26)
+var otroUsuario = new Usuario("jazmin","batista",21)
+var admin = new Admin ('jose','pepe',30,'tocar guitarra')
+
+
+console.log('usuarioNuevo',usuarioNuevo)
+console.log('otroUsuario',otroUsuario)
+console.log('admin',admin)
+usuarioNuevo.saludar()
+admin.saludar()
+*/
